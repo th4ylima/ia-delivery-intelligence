@@ -1,0 +1,6 @@
+﻿pedido_id,restaurante,valor_pedido,tempo_entrega_min,status
+1001,Burger House,45.9,32,Entregue
+1002,Pizza Central,68.5,55,Entregue
+1003,Sushi Express,72.0,48,Cancelado
+1004,Burger House,39.9,28,Entregue
+1005,Pizza Central,54.0,62,Entregue
