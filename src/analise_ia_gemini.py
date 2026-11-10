@@ -40,9 +40,9 @@ def gerar_analise():
         api_key=api_key,
         http_options=types.HttpOptions(
             retry_options=types.HttpRetryOptions(
-                attempts=6,
-                initial_delay=2.0,
-                max_delay=30.0,
+                attempts=3,
+                initial_delay=1.0,
+                max_delay=5.0,
                 exp_base=2.0,
                 jitter=1.0,
                 http_status_codes=[
@@ -58,8 +58,8 @@ def gerar_analise():
     )
 
     # Gera a análise
-    resposta = client.models.generate_content(
-        model="gemini-3.8-flash",
+    resposta = client.models.generate_content (
+        model="gemini-3.5-flash-lite",
         contents=prompt
     )
 
