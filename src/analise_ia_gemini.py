@@ -4,6 +4,7 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 from google import genai
+from google.genai import types
 
 from analista_ia import coletar_indicadores, criar_prompt
 
@@ -25,7 +26,7 @@ def gerar_analise():
 
     if not api_key:
         raise ValueError(
-            "Chave GEMINI_API_KEY não encontrada no arquivo .env."
+            "Chave GEMINI_API_KEY não encontrada."
         )
 
     # Coleta os indicadores
@@ -34,8 +35,27 @@ def gerar_analise():
     # Prepara o prompt
     prompt = criar_prompt(indicadores)
 
-    # Conecta ao Gemini
-    client = genai.Client(api_key=api_key)
+    # Configura a conexão e as tentativas automáticas
+    client = genai.Client(
+        api_key=api_key,
+        http_options=types.HttpOptions(
+            retry_options=types.HttpRetryOptions(
+                attempts=6,
+                initial_delay=2.0,
+                max_delay=30.0,
+                exp_base=2.0,
+                jitter=1.0,
+                http_status_codes=[
+                    408,
+                    429,
+                    500,
+                    502,
+                    503,
+                    504
+                ]
+            )
+        )
+    )
 
     # Gera a análise
     resposta = client.models.generate_content(
@@ -46,9 +66,11 @@ def gerar_analise():
     analise = resposta.text
 
     if not analise:
-        raise ValueError("O Gemini não retornou uma análise.")
+        raise ValueError(
+            "O Gemini não retornou uma análise."
+        )
 
-    # Cria a pasta de relatórios, se necessário
+    # Cria a pasta de relatórios
     pasta_relatorios = PASTA_PROJETO / "reports"
     pasta_relatorios.mkdir(exist_ok=True)
 
