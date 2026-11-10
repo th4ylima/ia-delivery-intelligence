@@ -22,6 +22,7 @@ ARQUIVO_CSV = BASE_DIR / "data" / "pedidos.csv"
 PASTA_RELATORIOS = BASE_DIR / "reports"
 
 sys.path.insert(0, str(BASE_DIR))
+sys.path.insert(0, str(BASE_DIR / "src"))
 
 
 # =========================================================
