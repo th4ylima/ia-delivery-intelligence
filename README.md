@@ -2,7 +2,9 @@
 
 Projeto de análise de dados de delivery desenvolvido com Python e Inteligência Artificial, com dashboard interativo em Streamlit e integração com a API do Google Gemini.
 
-🔗 **Demo online:** [Acessar dashboard](COLE_AQUI_O_LINK_DO_STREAMLIT_CLOUD)
+🚀 **[ACESSAR DASHBOARD ONLINE](https://ia-delivery-intelligence-hbprpusa5vmn28lonlhqbg.streamlit.app/)**
+
+💻 **[Repositório no GitHub](https://github.com/th4ylima/ia-delivery-intelligence)**
 
 ## Objetivo
 
