@@ -1,51 +1,70 @@
+
 import os
+from pathlib import Path
+
 from dotenv import load_dotenv
 from google import genai
 
 from analista_ia import coletar_indicadores, criar_prompt
 
-# Carrega a chave protegida
-load_dotenv()
 
-api_key = os.getenv("GEMINI_API_KEY")
+# Localização do projeto
+PASTA_PROJETO = Path(__file__).resolve().parent.parent
 
-if not api_key:
-    print("[ERRO] Chave da API não encontrada.")
-    raise SystemExit
+# Carrega a chave da API
+load_dotenv(PASTA_PROJETO / ".env")
 
-try:
-    # Coleta os indicadores do projeto
+
+def gerar_analise():
+    """
+    Coleta indicadores, envia para o Gemini,
+    recebe a análise e salva o relatório.
+    """
+
+    api_key = os.getenv("GEMINI_API_KEY")
+
+    if not api_key:
+        raise ValueError(
+            "Chave GEMINI_API_KEY não encontrada no arquivo .env."
+        )
+
+    # Coleta os indicadores
     indicadores = coletar_indicadores()
 
-    # Prepara o prompt para a IA
+    # Prepara o prompt
     prompt = criar_prompt(indicadores)
 
-    # Conecta à Gemini
+    # Conecta ao Gemini
     client = genai.Client(api_key=api_key)
 
-    print("\nEnviando indicadores para a inteligência artificial...")
-
+    # Gera a análise
     resposta = client.models.generate_content(
         model="gemini-3.8-flash",
         contents=prompt
     )
 
-    print("\n========== ANÁLISE DA IA ==========\n")
-    print(resposta.text)
+    analise = resposta.text
 
-    # Salva a análise em um relatório
-    os.makedirs("reports", exist_ok=True)
+    if not analise:
+        raise ValueError("O Gemini não retornou uma análise.")
+
+    # Cria a pasta de relatórios, se necessário
+    pasta_relatorios = PASTA_PROJETO / "reports"
+    pasta_relatorios.mkdir(exist_ok=True)
+
+    # Salva o relatório
+    arquivo_relatorio = (
+        pasta_relatorios / "analise_gemini.md"
+    )
 
     with open(
-        "reports/analise_gemini.md",
+        arquivo_relatorio,
         "w",
         encoding="utf-8"
     ) as arquivo:
-        arquivo.write("# Análise de Delivery com Inteligência Artificial\n\n")
-        arquivo.write(resposta.text)
+        arquivo.write(
+            "# Análise de Delivery com Inteligência Artificial\n\n"
+        )
+        arquivo.write(analise)
 
-    print("\n[OK] Relatório salvo em reports/analise_gemini.md")
-
-except Exception as erro:
-    print("\n[ERRO] Não foi possível realizar a análise.")
-    print(erro)
+    return analise
